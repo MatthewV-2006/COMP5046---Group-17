@@ -16,7 +16,7 @@ def submit():
     username = username_entry.get()
     password = password_entry.get()
     sql = '''INSERT INTO AccountDetails(AccountID,username,password,isAdmin)
-             VALUES(?,?,?,?,?,?) '''
+             VALUES(?,?,?,?) '''
     info = ('0', username, password, 'TRUE')
     with sqlite3.connect('Details.db') as conn:
         cursor = conn.cursor()
