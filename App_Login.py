@@ -1,4 +1,5 @@
 import tkinter as tk
+import sqlite3
 
 def login():
     login_button.pack_forget()
@@ -14,6 +15,14 @@ def login():
 def submit():
     username = username_entry.get()
     password = password_entry.get()
+    sql = '''INSERT INTO AccountDetails(AccountID,username,password,isAdmin)
+             VALUES(?,?,?,?,?,?) '''
+    info = ('0', username, password, 'TRUE')
+    with sqlite3.connect('Details.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute(sql, info)
+
+
 
 root = tk.Tk()
 root.title("Login")
