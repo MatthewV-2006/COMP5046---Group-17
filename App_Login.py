@@ -17,9 +17,17 @@ def submit():
     password = password_entry.get()
     sql = '''INSERT INTO AccountDetails(AccountID,username,password,isAdmin)
              VALUES(?,?,?,?) '''
-    info = ('0', username, password, True)
+    sqlGetID = 'SELECT AccountID from AccountDetails ORDER BY AccountID DESC LIMIT 1'
+    
+    
+    
     with sqlite3.connect('Details.db') as conn:
         cursor = conn.cursor()
+        cursor.execute(sqlGetID)
+        getId = cursor.fetchone()[0]
+        Id = int(getId)+1
+        info = (Id, username, password, False)
+
         cursor.execute(sql, info)
 
 
