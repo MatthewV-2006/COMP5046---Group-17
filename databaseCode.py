@@ -1,8 +1,8 @@
 import sqlite3
-con = sqlite3.connect("Details.db")
-cur = con.cursor()
-#cur.execute("CREATE TABLE AccountDetails(AccountID, username, password, isAdmin)")
-sql = 'DELETE FROM AccountDetails WHERE AccountID = ?'
-cur.execute(sql, (0,))
-con.commit()
+sqlDelete = 'DELETE FROM AccountDetails'
+with sqlite3.connect('Details.db') as con:
+    cur = con.cursor()
+    #cur.execute("CREATE TABLE AccountDetails(AccountID, username, password, isAdmin)")
+    cur.execute(sqlDelete)
+    con.commit()
 con.close()
