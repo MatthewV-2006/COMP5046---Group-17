@@ -17,7 +17,8 @@ def submit():
     password = password_entry.get()
     sql = '''INSERT INTO AccountDetails(AccountID,username,password,isAdmin)
              VALUES(?,?,?,?) '''
-    sqlGetID = 'SELECT AccountID from AccountDetails ORDER BY AccountID DESC LIMIT 1'
+    sqlGetID = 'SELECT MAX(CAST(AccountID AS INTEGER)) FROM AccountDetails'
+
     
     
     
