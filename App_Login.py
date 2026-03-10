@@ -29,9 +29,9 @@ def submit():
             fetchedPassword = row[0][2]
             fetchedAdminStatus = row[0][3]
             if((fetchedUsername == username) and (fetchedPassword==password)):
-                print("Login successful")
+                return([fetchedID,fetchedUsername,fetchedPassword,fetchedAdminStatus])
             else:
-                print("Login unsuccessful")
+                return None
 
 def createAccount():
     username = username_entry.get()
