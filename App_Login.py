@@ -9,10 +9,31 @@ def login():
 
     tk.Label(root, text="Password").pack()
     password_entry.pack()
-
+    create_button.pack()
     submit_button.pack()
 
 def submit():
+    username = username_entry.get()
+    password = password_entry.get()
+    sql = '''SELECT * FROM AccountDetails WHERE username=?'''
+    with sqlite3.connect('Details.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute(sql,(username,))
+        row = cursor.fetchall()
+        print(row)
+        print(username)
+        print(password)
+        if(row != []):
+            fetchedID = row[0][0]
+            fetchedUsername = row[0][1]
+            fetchedPassword = row[0][2]
+            fetchedAdminStatus = row[0][3]
+            if((fetchedUsername == username) and (fetchedPassword==password)):
+                print("Login successful")
+            else:
+                print("Login unsuccessful")
+
+def createAccount():
     username = username_entry.get()
     password = password_entry.get()
     sql = '''INSERT INTO AccountDetails(AccountID,username,password,isAdmin)
@@ -43,5 +64,7 @@ login_button.pack()
 username_entry = tk.Entry(root)
 password_entry = tk.Entry(root, show="*")
 
-submit_button = tk.Button(root, text="Submit", command=submit, width=10)
+submit_button = tk.Button(root, text="Sign in", command=submit, width=10)
+
+create_button = tk.Button(root, text="Create account", command=createAccount, width=10)
 root.mainloop()
