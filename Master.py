@@ -5,5 +5,9 @@ import tkinter as tk
 import sqlite3
 import App_Login
 root = tk.Tk()
-userDetails = App_Login.loginPage(root)
+loginPage = App_Login.loginPage(root)
+loginResponse = loginPage.main(root)
+userDetails = loginResponse[0]
+closingAction = loginResponse[1]
 print(userDetails)
+print(closingAction)
