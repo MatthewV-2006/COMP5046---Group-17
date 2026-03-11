@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from datetime import datetime
+import sqlite3
 class home:
     def __init__(self, root):
         #removes tkinter elements from previous page
@@ -47,12 +48,22 @@ class home:
         medication_progress_label.config(text=f"{self.taken_meds} / {self.total_num_medication} medications taken")
         status_label.config(text="Medication Taken")
     
-    def main(self,root):
-        # main frame
-        overview_frame = ttk.LabelFrame(root, text = "Today's Medication Overview", padding=20)
+    def main(self,root,userDetails):
+        # canvas to display everything
+        canvas = tk.Canvas(root, scrollregion=(0,0,800,800))
+        canvas.pack(anchor=tk.CENTER, expand=True)
+
+        #main frame
+        overview_frame = ttk.LabelFrame(canvas, text = "Today's Medication Overview", padding=20)
+
+        #creates a scrollbar for navigating the window
+        scrollbar = ttk.Scrollbar(canvas, orient=tk.VERTICAL, command=canvas.yview)
+        scrollbar.pack(side="right",fill="y")
+        scrollbar.config(command=canvas.yview)
+        canvas.config(yscrollcommand=scrollbar.set)
 
         # creates a section box inside the window
-        overview_frame.pack(padx=20, pady=20, fill="x")
+        overview_frame.pack(padx=20, pady=20, fill="x",expand=True)
 
         # displays the medication name
         name_label = ttk.Label(overview_frame, text = f"Medication: {self.next_due_medication['name']}", font = ("Arial", 12))
@@ -75,8 +86,8 @@ class home:
 
 
         # Today's schedule for medication
-        medication_schedule_frame = ttk.LabelFrame(root, text = "Today's Schedule:", padding = 10)
-        medication_schedule_frame.pack(padx=20, pady=10, fill="both")
+        medication_schedule_frame = ttk.LabelFrame(canvas, text = "Today's Schedule:", padding = 10)
+        medication_schedule_frame.pack(padx=20, pady=10, fill="both",expand=True)
 
         medication_schedule_list = tk.Listbox(medication_schedule_frame)
         medication_schedule_list.pack(fill="both")
@@ -92,7 +103,7 @@ class home:
             medication_schedule_list.insert(tk.END, medication)
 
         # creates section box inside the window called 'Medication Options'
-        medication_options = ttk.LabelFrame(root, text = "Medication Options:", padding=10)
+        medication_options = ttk.LabelFrame(canvas, text = "Medication Options:", padding=10)
 
         # places the section box in the window
         medication_options.pack(padx=20, pady=20, fill="x")
@@ -110,10 +121,10 @@ class home:
         ttk.Button(medication_options, text="View History", command=self.view_history).pack(fill="x", pady=4)
 
         # creates section box called 'Today's Medication Progress:'
-        medication_progress_frame = ttk.LabelFrame(root, text = "Today's Medication Progress:", padding=10)
+        medication_progress_frame = ttk.LabelFrame(canvas, text = "Today's Medication Progress:", padding=10)
 
         # places section box in the window
-        medication_progress_frame.pack(padx=20, pady=20, fill="x")
+        medication_progress_frame.pack(padx=20, pady=20, fill="x",expand=True)
 
         # creates a text label that displays the total number of medication taken 
         medication_progress_label = ttk.Label(medication_progress_frame, text = f"{self.taken_meds} / {self.total_num_medication} medications taken")
@@ -127,6 +138,24 @@ class home:
         """
         progress_bar = ttk.Progressbar(medication_progress_frame, length=800, maximum=self.total_num_medication)
         progress_bar.pack(pady=5)
+
+        # displays details of users if the user has admin
+        if userDetails[3]:
+            #creates new section for user accounts
+            users = ttk.LabelFrame(canvas, text = "Users:", padding=10)
+            users.pack(padx=20, pady=20, fill="x",expand=True)
+            user_list = tk.Listbox(users)
+            user_list.pack(fill="both")
+
+            #retrieves details of existing users
+            sql = "SELECT AccountID, username, isAdmin FROM AccountDetails"
+            with sqlite3.connect('Details.db') as conn:
+                cur = conn.cursor()
+                cur.execute(sql,)
+                iterator = cur.fetchall()
+                for row in iterator:
+                    print(row)
+                    user_list.insert(tk.END, str(row))
 
         # starts the program and keeps the window open
         root.mainloop()

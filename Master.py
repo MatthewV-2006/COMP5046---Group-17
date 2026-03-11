@@ -14,4 +14,4 @@ closingAction = loginResponse[1]
 #print(closingAction)
 if closingAction == "signInSuccess" or closingAction == "accountCreationSuccess":
     homePage = home.home(root)
-    homeResponse = homePage.main(root)
+    homeResponse = homePage.main(root,userDetails)
