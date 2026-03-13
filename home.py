@@ -8,6 +8,7 @@ class home:
         for child in root.winfo_children():
             child.destroy()
 
+        self.closing_message = "quit"
         self.total_num_medication = 3
         self.taken_meds = 0
 
@@ -24,6 +25,11 @@ class home:
             "time": "10:00"
         }
         # example medication data
+
+    # update contact details
+    def update_details(self,root):
+        self.closing_action = "updateDetails"
+        root.quit()
 
     # add medication
     def add_medication():
@@ -52,6 +58,10 @@ class home:
         # canvas to display everything
         canvas = tk.Canvas(root, scrollregion=(0,0,800,800))
         canvas.pack(anchor=tk.CENTER, expand=True)
+
+        #button for updating the details of a user account
+        update_details_button = ttk.Button(canvas, text="update contact details", command=lambda: self.update_details(root))
+        update_details_button.pack()
 
         #main frame
         overview_frame = ttk.LabelFrame(canvas, text = "Today's Medication Overview", padding=20)
@@ -159,3 +169,4 @@ class home:
 
         # starts the program and keeps the window open
         root.mainloop()
+        return(self.closing_action)
