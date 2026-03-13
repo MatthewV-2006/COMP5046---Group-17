@@ -48,10 +48,13 @@ class loginPage:
                 fetchedUsername = row[0][1]
                 fetchedPassword = row[0][2]
                 fetchedAdminStatus = row[0][3]
+                fetchedEmail = row[0][4]
+                fetchedPhoneNumber = row[0][5]
                 if((fetchedUsername == username) and (fetchedPassword==password)):
                     root.quit()
-                    self.userDetails = [fetchedID,fetchedUsername,fetchedPassword,fetchedAdminStatus]
+                    self.userDetails = [fetchedID,fetchedUsername,fetchedPassword,fetchedAdminStatus,fetchedEmail,fetchedPhoneNumber]
                     self.closingAction = "signInSuccess"
+                    conn.close()
 
     def createAccount(self, root, username_entry, password_entry):
         username = username_entry.get()

@@ -5,6 +5,7 @@ import tkinter as tk
 import sqlite3
 import App_Login
 import home
+import contactDetails
 root = tk.Tk()
 loginPage = App_Login.loginPage(root)
 loginResponse = loginPage.main(root)
@@ -16,5 +17,7 @@ if closingAction == "signInSuccess" or closingAction == "accountCreationSuccess"
     homePage = home.home(root)
     closingAction = homePage.main(root,userDetails)
     if closingAction == "updateDetails":
-        pass
-    
+        updateDetails = contactDetails.contactDetails(root, userDetails)
+        updateResponse = updateDetails.main(root)
+        userDetails = updateResponse[0]
+        closingAction = updateResponse[1]
