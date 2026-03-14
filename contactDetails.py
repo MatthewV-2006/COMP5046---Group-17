@@ -12,8 +12,10 @@ class contactDetails:
     
     def main(self, root):
         email_entry = tk.Entry(root)
+        email_entry.insert(0,self.userDetails[4])
         email_entry.pack()
         phone_entry = tk.Entry(root)
+        phone_entry.insert(0,self.userDetails[5])
         phone_entry.pack()
         submit_button = tk.Button(root, text="update details", command=lambda: self.submit(root, email_entry, phone_entry), width=10)
         submit_button.pack()
@@ -23,6 +25,9 @@ class contactDetails:
     def submit(self, root, email_entry, phone_entry):
         email = email_entry.get()
         phone = phone_entry.get()
+        print(self.userDetails[0])
+        print(email)
+        print(phone)
         sql = "UPDATE AccountDetails SET email=?, phone=? WHERE AccountID=?"
 
         with sqlite3.connect('Details.db') as conn:
@@ -31,8 +36,7 @@ class contactDetails:
             sql = "SELECT email,phone FROM AccountDetails WHERE AccountID=?"
             cursor.execute(sql,(self.userDetails[0],))
             row = cursor.fetchall()
-            self.userDetails[4] = row[0]
-            self.userDetails[5] = row[5]
+            self.userDetails[4] = row[0][0]
+            self.userDetails[5] = row[0][1]
             self.closingAction = "updateSuccess"
             root.quit()
-            conn.close()

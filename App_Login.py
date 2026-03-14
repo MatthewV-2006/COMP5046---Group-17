@@ -11,20 +11,22 @@ class loginPage:
         self.closingAction = "quit"
 
     def main(self, root):
-        login_button = tk.Button(root, text="Login", command=lambda: self.login(root, login_button, username_entry, password_entry, create_button, submit_button), width=10)
+        login_button = tk.Button(root, text="Login", command=lambda: self.login(root, login_button, username_entry, password_entry, email_entry, phone_entry, create_button, submit_button), width=10)
         login_button.pack()
 
         username_entry = tk.Entry(root)
         password_entry = tk.Entry(root, show="*")
+        email_entry = tk.Entry(root)
+        phone_entry = tk.Entry(root)
 
         submit_button = tk.Button(root, text="Sign in", command=lambda: self.submit(root, username_entry, password_entry), width=10)
 
-        create_button = tk.Button(root, text="Create account", command=lambda: self.createAccount(root, username_entry, password_entry), width=10)
+        create_button = tk.Button(root, text="Create account", command=lambda: self.createAccount(root, username_entry, password_entry, email_entry, phone_entry), width=10)
         root.mainloop()
         return (self.userDetails,self.closingAction)
 
 
-    def login(self, root, login_button, username_entry, password_entry, create_button, submit_button):
+    def login(self, root, login_button, username_entry, password_entry, email_entry, phone_entry, create_button, submit_button):
         login_button.pack_forget()
 
         tk.Label(root, text="Username").pack()
@@ -32,6 +34,12 @@ class loginPage:
 
         tk.Label(root, text="Password").pack()
         password_entry.pack()
+
+        tk.Label(root, text="Email address").pack()
+        email_entry.pack()
+
+        tk.Label(root, text="Phone number").pack()
+        phone_entry.pack()
         create_button.pack()
         submit_button.pack()
 
@@ -54,13 +62,14 @@ class loginPage:
                     root.quit()
                     self.userDetails = [fetchedID,fetchedUsername,fetchedPassword,fetchedAdminStatus,fetchedEmail,fetchedPhoneNumber]
                     self.closingAction = "signInSuccess"
-                    conn.close()
 
-    def createAccount(self, root, username_entry, password_entry):
+    def createAccount(self, root, username_entry, password_entry, email_entry, phone_entry):
         username = username_entry.get()
         password = password_entry.get()
-        sql = '''INSERT INTO AccountDetails(AccountID,username,password,isAdmin)
-             VALUES(?,?,?,?) '''
+        email = email_entry.get()
+        phone = phone_entry.get()
+        sql = '''INSERT INTO AccountDetails(AccountID,username,password,isAdmin,email,phone)
+             VALUES(?,?,?,?,?,?) '''
         sqlGetID = 'SELECT MAX(CAST(AccountID AS INTEGER)) FROM AccountDetails'
 
     
@@ -71,9 +80,9 @@ class loginPage:
             cursor.execute(sqlGetID)
             getId = cursor.fetchone()[0]
             Id = int(getId)+1
-            info = (Id, username, password, False)
+            info = (Id, username, password, False, email, phone)
 
             cursor.execute(sql, info)
-            self.userDetails = [Id, username, password, False]
+            self.userDetails = [Id, username, password, False, email, phone]
             self.closingAction = "accountCreationSuccess"
             root.quit()
