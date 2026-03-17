@@ -12,10 +12,7 @@ CREATE TABLE IF NOT EXISTS medications (
 conn.commit()
 
 def add_med_to_db(name, dose, reminder_time):
-    cursor.execute(
-        "INSERT INTO medications (name, dose, reminder_time) VALUES (?, ?, ?)",
-        (name, dose, reminder_time)
-    )
+    cursor.execute("INSERT INTO medications (name, dose, reminder_time) VALUES (?, ?, ?)", (name, dose, reminder_time))
     conn.commit()
 
 def get_med_db():

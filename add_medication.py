@@ -4,7 +4,7 @@ from medicationsDB import add_med_to_db
 
 # opens a new window called 'Add Medication'
 def open_add_med(Parent, schedule_list, med_reminders):
-    add_med_window = tk.Toplevel()
+    add_med_window = tk.Toplevel(Parent)
     add_med_window.title("Add Medication")
     add_med_window.geometry("650x650")
 
