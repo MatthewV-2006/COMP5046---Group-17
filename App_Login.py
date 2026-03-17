@@ -1,3 +1,5 @@
+# importing home page
+import home
 import tkinter as tk
 
 def login():
@@ -14,6 +16,11 @@ def login():
 def submit():
     username = username_entry.get()
     password = password_entry.get()
+    
+    # closes login window and opens the home page window
+    if username and password:
+        root.destroy()
+        home.open_home_page()
 
 root = tk.Tk()
 root.title("Login")
