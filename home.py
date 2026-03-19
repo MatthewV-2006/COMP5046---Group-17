@@ -1,11 +1,8 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk
 from datetime import datetime
-from medicationsDB import get_med_db
-from add_medication import open_add_med
-
-# home page
 import sqlite3
+from add_medication import open_add_med
 class home:
     def __init__(self, root):
         #removes tkinter elements from previous page
@@ -13,179 +10,187 @@ class home:
             child.destroy()
 
         self.root = root
-        self.closing_action = "quit"
+        self.closing_action = None
+        self.medication_reminders = []
+        self.closing_message = "quit"
         self.total_num_medication = 3
         self.taken_meds = 0
-        self.medication_reminders = []
-        
+
         # sets the title of the window
         root.title("Home page")
-        
+
         # sets the size of the window
         root.geometry("850x850")
 
-    # sorts reminders and retrieves the latest due medication
-    def get_due_medication(self):
-        now = datetime.now()
-        medications = []
-        for name_of_med, reminder_time in self.medication_reminders:
-            reminder_time = datetime.strptime(reminder_time, "%H:%M")
-            reminder_time = reminder_time.replace(year=now.year, month=now.month, day=now.day)
-            medications.append((name_of_med, reminder_time))
-            
-        medications.sort(key=lambda x: x[1])
+        # creates dictionary that stores data about a medication
+        self.next_due_medication = {
+            "name": "Ibuprofen",
+            "dose": "500mg", 
+            "time": "10:00"
+        }
+        # example medication data
 
-        for name_of_med, reminder_time in medications:
-            if reminder_time >= now:
-                return name_of_med, reminder_time.strftime("%H:%M")
-            
-        if medications:
-            return medications[0][0], medications[0][1].strftime("%H:%M")
-
-        return None, None
-
-    def load_medications(self, listbox):
-        rows = get_med_db()
-        for name, dose, reminder_time in rows:
-            listbox.insert(tk.END, f"{reminder_time} - {name}")
-            self.medication_reminders.append((name, reminder_time))
-    
-    # update contact details 
-    def update_details(self, root):
+    # update contact details
+    def update_details(self,root):
         self.closing_action = "updateDetails"
         root.quit()
 
-    # adds medication
-    def add_medication(self):
+    # add medication
+    def add_medication(self, event = None):
         open_add_med(self.root, self.schedule_list, self.medication_reminders)
 
-    # updates medication
+    # edit medication
     def modify_medication(self):
         print("Modify medication clicked")
 
-    # set reminder for medication
+    # set remainder for medication
     def set_medication_reminder(self):
-        print("Set reminder clicked")
-    
-    # view medication history
+        print("set medication reminder clicked")
+
+    # view history
     def view_history(self):
-        print("View history clicked")
+        print("view history clicked")
 
     # changes the label text when the 'Mark as Taken' button is clicked
-    def taken_medication(self, progress_bar, label, status_label):
+    def taken_medication(self,progress_bar,medication_progress_label,status_label):
         self.taken_meds += 1
+        if self.taken_meds > self.total_num_medication:
+            self.taken_meds = self.total_num_medication
         progress_bar["value"] = self.taken_meds
-        label.config(text=f"{self.taken_meds} / {self.total_num_medication} medications taken")
+        medication_progress_label.config(text=f"{self.taken_meds} / {self.total_num_medication} medications taken")
         status_label.config(text="Medication Taken")
-
-    def main(self, root, userDetails):
-        # main container frame
+    
+    def main(self,root,userDetails):
         main_container = ttk.Frame(root)
-        main_container.pack(fill="both", expand=True)
+        main_container.pack(fill = "both", expand = True)
         
         # canvas to display everything
         canvas = tk.Canvas(main_container)
-        canvas.pack(side="left", fill = "both", expand = True)
+        canvas.pack(side = "left", fill = "both", expand = True)
+        
+        scroll_bar = ttk.Scrollbar(main_container, orient = "vertical", command = canvas.yview)
+        scroll_bar.pack(side = "right", fill = "y")
+        canvas.configure(yscrollcommand=scroll_bar.set)
 
-        #creates a scrollbar for navigating the window
-        scrollbar = ttk.Scrollbar(main_container, orient="vertical", command=canvas.yview)
-        scrollbar.pack(side="right", fill="y")
+        scrollable_frame = ttk.Frame(canvas)
+        scrollable_window = canvas.create_window((0,0), window=scrollable_frame, anchor = "nw")
 
-        canvas.configure(yscrollcommand=scrollbar.set)
-
-        frame = ttk.Frame(canvas)
-        canvas_window = canvas.create_window((0, 0), window=frame, anchor="nw")
-
-        canvas.bind("<Configure>", lambda e: canvas.itemconfig(canvas_window, width=e.width))
-        frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
-
+        def on_canvas_configure(event):
+            canvas.itemconfig(scrollable_window, width = event.width)
+        
+        canvas.bind("<Configure>", on_canvas_configure)
+        
+        scrollable_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        scrollable_frame.columnconfigure(0, weight = 1)
+                        
         #button for updating the details of a user account
-        update_details_button = ttk.Button(frame, text="Update Contact Details", command=lambda: self.update_details(root)).pack()
+        update_details_button = ttk.Button(scrollable_frame, text = "Update contact details", command=lambda: self.update_details(root))
+        update_details_button.pack(pady = 10)
 
-        # main frame
-        overview_frame = ttk.LabelFrame(frame, text="Today's Medication Overview", padding=20)
-        overview_frame.pack(padx=20, pady=20, fill="x")
+        #main frame
+        overview_frame = ttk.LabelFrame(scrollable_frame, text = "Today's Medication Overview", padding=20)
 
-        status_label = ttk.Label(overview_frame, text="")
-        status_label.pack()
-        
-        # Today's medication schedule
-        schedule_frame = ttk.LabelFrame(frame, text="Today's Schedule", padding=10)
-        schedule_frame.pack(padx=20, pady=10, fill="both")
+        # creates a section box inside the window
+        overview_frame.pack(padx=20, pady=20, fill="x",expand=True)
 
-        self.schedule_list = tk.Listbox(schedule_frame)
-        self.schedule_list.pack(fill="both")
+        # displays the medication name
+        name_label = ttk.Label(overview_frame, text = f"Medication: {self.next_due_medication['name']}", font = ("Arial", 12))
+        name_label.pack(anchor="w", fill= "x", expand = True, pady=2)
 
-        self.load_medications(self.schedule_list)
-        
-        med_name, reminder_time = self.get_due_medication()
-        
-        if med_name and reminder_time:
-            name_label = ttk.Label(overview_frame, text=f"Medication: {med_name}")
-            name_label.pack(fill = "x", padx = 10)
-            time_label = ttk.Label(overview_frame, text=f"Take at: {reminder_time}")
-            time_label.pack(fill = "x", padx = 10)
-        else:
-            name_label = ttk.Label(overview_frame, text=f"Medication: None")
-            name_label.pack(fill = "x", padx = 10)
-            time_label = ttk.Label(overview_frame, text=f"Take at: --")
-            time_label.pack(fill = "x", padx = 10)
+        # displays the dosage of medication
+        dose_label = ttk.Label(overview_frame, text = f"Take at: {self.next_due_medication['time']}", font = ("Arial", 12))
+        dose_label.pack(anchor="w", fill = "x", expand = True, pady=2)
 
-        options_frame = ttk.LabelFrame(frame, text="Medication Options", padding=10)
-        options_frame.pack(padx=20, pady=20, fill="x")
+        # displays the time at which the medication needs to be taken
+        time_label = ttk.Label(overview_frame, text = f"Take at: {self.next_due_medication['time']}", font = ("Arial", 12))
+        time_label.pack(anchor="w", fill = "x", expand = True, pady=2)
 
-        # Medication options
-        ttk.Button(options_frame, text="Add Medication", command=self.add_medication).pack(fill="x")
-        ttk.Button(options_frame, text="Edit Medication", command=self.modify_medication).pack(fill="x")
-        ttk.Button(options_frame, text="Set Reminder", command=self.set_medication_reminder).pack(fill="x")
-        ttk.Button(options_frame, text="View History", command=self.view_history).pack(fill="x")
+        # Button to click on if medication has been taken
+        taken_medication_button = ttk.Button(overview_frame, text = "Mark as Taken", command=lambda: self.taken_medication(progress_bar, medication_progress_label,status_label))
+        taken_medication_button.pack(fill = "x", expand = True, pady = 10)
 
-        progress_frame = ttk.LabelFrame(frame, text="Progress", padding=10)
-        progress_frame.pack(padx=20, pady=20, fill="x")
+        status_label = ttk.Label(overview_frame, text = "")
+        status_label.pack(anchor = "w", fill = "x", expand = True, pady = 2)
 
-        progress_label = ttk.Label(progress_frame, text=f"{self.taken_meds} / {self.total_num_medication} medications taken")
-        progress_label.pack()
 
-        """creates progress bar which becomes full when number of medication taken is equal
-        to total number of medications so the user can track their progress 
+        # Today's schedule for medication
+        medication_schedule_frame = ttk.LabelFrame(scrollable_frame, text = "Today's Schedule:", padding = 10)
+        medication_schedule_frame.pack(padx=20, pady=10, fill="both",expand=True)
+
+        medication_schedule_list = tk.Listbox(medication_schedule_frame)
+        self.schedule_list = medication_schedule_list
+        medication_schedule_list.pack(fill = "both", expand = True)
+
+        # example medication data
+        medication_schedule = [
+            "10:00 - Ibuprofen", 
+            "14:00 - Iron supplements", 
+            "20:00 - Vitamin A"
+        ]
+
+        for medication in medication_schedule:
+            medication_schedule_list.insert(tk.END, medication)
+
+        # creates section box inside the window called 'Medication Options'
+        medication_options = ttk.LabelFrame(scrollable_frame, text = "Medication Options:", padding=10)
+        medication_options.columnconfigure(0, weight = 1)
+
+        # places the section box in the window
+        medication_options.pack(padx=20, pady=20, fill="x", expand = True)
+
+        # creates medication button
+        ttk.Button(medication_options, text="Add Medication", command=self.add_medication).pack(fill="x", expand = True, pady = 4)
+
+        # creates edit medication button
+        ttk.Button(medication_options, text="Edit Medication", command=self.modify_medication).pack(fill="x", expand = True, pady = 4)
+
+        # creates set reminder button
+        ttk.Button(medication_options, text="Set Reminder", command=self.set_medication_reminder).pack(fill="x", expand = True, pady = 4)
+
+        # creates view history button
+        ttk.Button(medication_options, text="View History", command=self.view_history).pack(fill="x", expand = True, pady = 4)
+
+        # creates section box called 'Today's Medication Progress:'
+        medication_progress_frame = ttk.LabelFrame(scrollable_frame, text = "Today's Medication Progress:", padding=10)
+        medication_progress_frame.columnconfigure(0, weight = 1)        
+
+        # places section box in the window
+        medication_progress_frame.pack(padx=20, pady=20, fill="x",expand=True)
+
+        # creates a text label that displays the total number of medication taken 
+        medication_progress_label = ttk.Label(medication_progress_frame, text = f"{self.taken_meds} / {self.total_num_medication} medications taken")
+
+        # places label inside the frame
+        medication_progress_label.pack(pady=5)
+
+        """creates progress bar which becomes full
+        when number of medication taken is equal
+        to total number of medications 
         """
-        progress_bar = ttk.Progressbar(progress_frame, maximum=self.total_num_medication)
-        progress_bar.pack(fill="x")
-
-        # Button to click if you have taken your next due medication
-        ttk.Button(overview_frame, text="Mark as Taken", command=lambda: self.taken_medication(progress_bar, progress_label, status_label)).pack()
+        progress_bar = ttk.Progressbar(medication_progress_frame, maximum=self.total_num_medication)
+        progress_bar.pack(fill = "x", pady = 5, expand = True)
 
         # displays details of users if the user has admin
         if userDetails[3]:
             #creates new section for user accounts
-            users = ttk.LabelFrame(frame, text="Users", padding=10)
-            users.pack(padx=20, pady=20, fill="x")
-
+            users = ttk.LabelFrame(scrollable_frame, text = "Users:", padding=10)
+            users.columnconfigure(0, weight = 1)
+            users.pack(padx=20, pady=20, fill="both",expand=True)
             user_list = tk.Listbox(users)
-            user_list.pack(fill="both")
+            user_list.pack(fill = "both", expand = True)
 
             #retrieves details of existing users
             sql = "SELECT AccountID, username, isAdmin FROM AccountDetails"
             with sqlite3.connect('Details.db') as conn:
                 cur = conn.cursor()
                 cur.execute(sql,)
-                for row in cur.fetchall():
+                iterator = cur.fetchall()
+                for row in iterator:
+                    print(row)
                     user_list.insert(tk.END, str(row))
 
-        return self.closing_action
-    
-if __name__ == "__main__":
-    # creates main window
-    root = tk.Tk()
-    
-    # user test data
-    userDetails = ("id", "username", "email", True)
-
-    # creates app instance
-    app = home(root)
-    
-    # creates user interface for home page
-    app.main(root, userDetails)
-    
-    # starts the program and keeps the window open
-    root.mainloop()
+        # starts the program and keeps the window open
+        scrollable_frame.update_idletasks()
+        canvas.configure(scrollregion=canvas.bbox("all"))
+        root.mainloop()
+        return(self.closing_action)
