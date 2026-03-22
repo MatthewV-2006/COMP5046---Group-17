@@ -35,6 +35,7 @@ class home:
         self.closing_action = "updateDetails"
         root.quit()
     
+    # create a child account
     def create_child_account(self,root):
         self.closing_action = "createChildAccount"
         root.quit()

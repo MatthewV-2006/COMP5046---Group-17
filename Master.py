@@ -6,6 +6,7 @@ import sqlite3
 import App_Login
 import home
 import contactDetails
+import childCreation
 root = tk.Tk()
 loginPage = App_Login.loginPage(root)
 loginResponse = loginPage.main(root)
@@ -21,3 +22,6 @@ if closingAction == "signInSuccess" or closingAction == "accountCreationSuccess"
         updateResponse = updateDetails.main(root)
         userDetails = updateResponse[0]
         closingAction = updateResponse[1]
+    elif closingAction == "createChildAccount":
+        childCreation = childCreation.childCreation(root, userDetails)
+        childCreationResponse = childCreation.main(root)
