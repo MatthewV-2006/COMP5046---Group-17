@@ -34,6 +34,11 @@ class home:
     def update_details(self,root):
         self.closing_action = "updateDetails"
         root.quit()
+    
+    # create a child account
+    def create_child_account(self,root):
+        self.closing_action = "createChildAccount"
+        root.quit()
 
     # add medication
     def add_medication(self, event = None):
@@ -86,6 +91,9 @@ class home:
         #button for updating the details of a user account
         update_details_button = ttk.Button(scrollable_frame, text = "Update contact details", command=lambda: self.update_details(root))
         update_details_button.pack(pady = 10)
+
+        create_child_account_button = ttk.Button(scrollable_frame, text="create child account", command=lambda: self.create_child_account(root))
+        create_child_account_button.pack(pady=10)
 
         #main frame
         overview_frame = ttk.LabelFrame(scrollable_frame, text = "Today's Medication Overview", padding=20)

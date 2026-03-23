@@ -8,7 +8,17 @@ CREATE TABLE IF NOT EXISTS medications (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     DOSE TEXT NOT NULL, 
-    reminder_time TEXT NOT NULL)""")
+    reminder_time TEXT NOT NULL,
+    child_ID INTEGER
+    )""")
+
+# adding a new column 'child_ID' to DB
+# if child_ID doesn't exist then it's added otherwise it does nothing
+try:
+    cursor.execute("ALTER TABLE medications ADD COLUMN child_ID INTEGER")
+except:
+    pass
+
 conn.commit()
 
 def add_med_to_db(name, dose, reminder_time):
