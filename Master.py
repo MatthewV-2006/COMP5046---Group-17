@@ -7,6 +7,7 @@ import App_Login
 import home
 import contactDetails
 import childCreation
+import AccountMainPage
 root = tk.Tk()
 loginPage = App_Login.loginPage(root)
 loginResponse = loginPage.main(root)
@@ -15,13 +16,18 @@ closingAction = loginResponse[1]
 #print(userDetails)
 #print(closingAction)
 if closingAction == "signInSuccess" or closingAction == "accountCreationSuccess":
-    homePage = home.home(root)
+    homePage = AccountMainPage.home(root)
     closingAction = homePage.main(root,userDetails)
     if closingAction == "updateDetails":
         updateDetails = contactDetails.contactDetails(root, userDetails)
         updateResponse = updateDetails.main(root)
         userDetails = updateResponse[0]
         closingAction = updateResponse[1]
+
     elif closingAction == "createChildAccount":
         childCreation = childCreation.childCreation(root, userDetails)
         childCreationResponse = childCreation.main(root)
+
+    elif closingAction == "addMedication":
+        MedicationPage = home.home(root)
+        closingAction = MedicationPage.main(root, userDetails)

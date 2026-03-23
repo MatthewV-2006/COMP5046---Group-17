@@ -30,12 +30,21 @@ class home:
         self.closing_action = "updateDetails"
         root.quit()
 
+    # add medication
+    def add_medication(self,root):
+        self.closing_action = "addMedication"
+        root.quit()
+
+    # create a child account
+    def create_child_account(self,root):
+        self.closing_action = "createChildAccount"
+        root.quit()
 
     
     def main(self,root,userDetails):
         main_container = ttk.Frame(root)
         main_container.pack(fill = "both", expand = True)        
-        
+
         # canvas to display everything
         canvas = tk.Canvas(main_container)
         canvas.pack(side = "left", fill = "both", expand = True)
@@ -55,10 +64,25 @@ class home:
         scrollable_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
         scrollable_frame.columnconfigure(0, weight = 1)
 
+
+        """Add any buttons for new pages here and the add a new function (def) above to output the correct closeing action. 
+        Then you can update Master.py to open the new page"""
                         
         #button for updating the details of a user account
         update_details_button = ttk.Button(scrollable_frame, text = "Update contact details", command=lambda: self.update_details(root))
         update_details_button.pack(pady = 10)
+
+        #button for adding medication
+        add_medication_button = ttk.Button(scrollable_frame, text = "Add Medication", command=lambda: self.add_medication(root))
+        add_medication_button.pack(pady = 10)
+
+        #button for adding medication
+        create_child_account_button = ttk.Button(scrollable_frame, text = "Create child account", command=lambda: self.create_child_account(root))
+        create_child_account_button.pack(pady = 10)
+
+
+
+        """----------------------------------------"""
 
 
 
