@@ -37,7 +37,9 @@ def open_add_med(Parent, schedule_list, med_reminders):
         add_med_to_db(name, dose, time)
         
         med_reminders.append((name, time))
-        schedule_list.insert(tk.END, f"{time} - {name}")
+        # testing whether medication was added to reminders
+        print(med_reminders)
+        #schedule_list.insert(f"{time} - {name}")
         
         # closes window once user has clicked 'Save'
         add_med_window.destroy()
