@@ -3,6 +3,7 @@ from tkinter import ttk
 from datetime import datetime
 import sqlite3
 from add_medication import open_add_med
+from view_child_meds import ViewChildMedications
 class home:
     def __init__(self, root):
         #removes tkinter elements from previous page
@@ -37,7 +38,12 @@ class home:
         open_add_med(self.root, self.schedule_list, self.medication_reminders)
         #self.closing_action = "addMedication"
         #root.quit()
-
+    
+    # display a child's medications
+    def view_child_meds(self):
+        viewer = ViewChildMedications(self.root)
+        viewer.create_window()
+        
     # create a child account
     def create_child_account(self,root):
         self.closing_action = "createChildAccount"
@@ -88,7 +94,9 @@ class home:
         create_child_account_button = ttk.Button(scrollable_frame, text = "Create child account", command=lambda: self.create_child_account(root))
         create_child_account_button.pack(pady = 10)
 
-
+        # creates a button for viewing child medications
+        view_child_meds_button = ttk.Button(scrollable_frame, text="View child medications", command=self.view_child_meds)
+        view_child_meds_button.pack(pady=10)
 
         """----------------------------------------"""
 
