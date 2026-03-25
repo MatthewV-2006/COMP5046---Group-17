@@ -12,6 +12,7 @@ class home:
         self.root = root
         self.closing_action = None
         self.childID = None
+        self.schedule_list = None
         self.medication_reminders = []
         self.closing_message = "quit"
         self.total_num_medication = 3
@@ -33,8 +34,9 @@ class home:
 
     # add medication
     def add_medication(self,root):
-        self.closing_action = "addMedication"
-        root.quit()
+        open_add_med(self.root, self.schedule_list, self.medication_reminders)
+        #self.closing_action = "addMedication"
+        #root.quit()
 
     # create a child account
     def create_child_account(self,root):
