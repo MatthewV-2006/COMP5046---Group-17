@@ -34,7 +34,8 @@ def open_add_med(Parent, schedule_list, med_reminders):
         dose = dose_entry.get()
         time = time_entry.get()
         
-        add_med_to_db(name, dose, time)
+        # TEMPORARY FIX! assigning all meds to child ID = 1 so progam runs
+        add_med_to_db(name, dose, time, 1)
         
         med_reminders.append((name, time))
         # testing whether medication was added to reminders
