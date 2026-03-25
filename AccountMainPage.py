@@ -11,6 +11,7 @@ class home:
 
         self.root = root
         self.closing_action = None
+        self.childID = None
         self.medication_reminders = []
         self.closing_message = "quit"
         self.total_num_medication = 3
@@ -39,7 +40,12 @@ class home:
     def create_child_account(self,root):
         self.closing_action = "createChildAccount"
         root.quit()
-
+    
+    #edit details of an existing child account
+    def edit_child_account(self,root,childID):
+        self.closing_action = "editChildAccount"
+        self.childID = childID
+        root.quit()
     
     def main(self,root,userDetails):
         main_container = ttk.Frame(root)
@@ -84,8 +90,24 @@ class home:
 
         """----------------------------------------"""
 
-
-
+        #displays list of child accounts related to the current parent account
+        sql = "SELECT AccountID, Username FROM main.ChildAccountDetails"
+        with sqlite3.connect('Details.db') as conn:
+            cur = conn.cursor()
+            cur.execute(sql,)
+            iterator = cur.fetchall()
+            if iterator != []:
+                children = ttk.LabelFrame(scrollable_frame, text = "Children:", padding=10)
+                children.columnconfigure(0, weight = 1)
+                children.pack(padx=20, pady=20, fill="both",expand=True)
+                counter = 0
+                for row in iterator:
+                    id = row[0]
+                    name = row[1]
+                    childName = tk.Label(children, text=name)
+                    editChildButton = ttk.Button(children, text = "edit details", command=lambda:self.edit_child_account(root,id))
+                    childName.pack()
+                    editChildButton.pack()
 
         # displays details of users if the user has admin
         if userDetails[3]:
@@ -103,11 +125,10 @@ class home:
                 cur.execute(sql,)
                 iterator = cur.fetchall()
                 for row in iterator:
-                    print(row)
                     user_list.insert(tk.END, str(row))
 
         # starts the program and keeps the window open
         scrollable_frame.update_idletasks()
         canvas.configure(scrollregion=canvas.bbox("all"))
         root.mainloop()
-        return(self.closing_action)
+        return(self.closing_action,self.childID)

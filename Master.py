@@ -4,30 +4,32 @@
 import tkinter as tk
 import sqlite3
 import App_Login
-import home
 import contactDetails
 import childCreation
+import editChildren
 import AccountMainPage
 root = tk.Tk()
 loginPage = App_Login.loginPage(root)
 loginResponse = loginPage.main(root)
 userDetails = loginResponse[0]
 closingAction = loginResponse[1]
-#print(userDetails)
-#print(closingAction)
 if closingAction == "signInSuccess" or closingAction == "accountCreationSuccess":
     homePage = AccountMainPage.home(root)
-    closingAction = homePage.main(root,userDetails)
-    if closingAction == "updateDetails":
+    homePageResponse = homePage.main(root,userDetails)
+    if homePageResponse[0] == "updateDetails":
         updateDetails = contactDetails.contactDetails(root, userDetails)
         updateResponse = updateDetails.main(root)
         userDetails = updateResponse[0]
         closingAction = updateResponse[1]
 
-    elif closingAction == "createChildAccount":
+    elif homePageResponse[0] == "createChildAccount":
         childCreation = childCreation.childCreation(root, userDetails)
         childCreationResponse = childCreation.main(root)
+    
+    elif homePageResponse[0] == "editChildAccount":
+        editChildren = editChildren.editChildren(root, homePageResponse[1])
+        editChildrenResponse = editChildren.main(root)
 
-    elif closingAction == "addMedication":
-        MedicationPage = home.home(root)
+    elif homePageResponse[0] == "addMedication":
+        MedicationPage = AccountMainPage.home(root)
         closingAction = MedicationPage.main(root, userDetails)
