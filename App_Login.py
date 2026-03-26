@@ -11,9 +11,10 @@ class loginPage:
         root.geometry("400x300")
         self.userDetails = []
         self.closingAction = "quit"
+        self.isChild = False
 
     def main(self, root):
-        login_button = tk.Button(root, text="Login", command=lambda: self.login(root, login_button, username_entry, password_entry, email_entry, phone_entry, create_button, submit_button), width=10)
+        login_button = tk.Button(root, text="Login", command=lambda: self.login(root, login_button, username_entry, password_entry, email_entry, phone_entry, create_button, submit_button, child_button), width=10)
         login_button.pack()
 
         username_entry = tk.Entry(root)
@@ -23,11 +24,12 @@ class loginPage:
 
         submit_button = tk.Button(root, text="Sign in", command=lambda: self.submit(root, username_entry, password_entry), width=10)
         create_button = tk.Button(root, text="Create account", command=lambda: self.createAccount(root, username_entry, password_entry, email_entry, phone_entry), width=10)
+        child_button = tk.Button(root, text="log in as child", command=lambda: self.childLogin(root, username_entry, password_entry, email_entry, phone_entry), width=10)
         root.mainloop()
-        return (self.userDetails,self.closingAction)
+        return (self.userDetails,self.closingAction,self.isChild)
 
 
-    def login(self, root, login_button, username_entry, password_entry, email_entry, phone_entry, create_button, submit_button):
+    def login(self, root, login_button, username_entry, password_entry, email_entry, phone_entry, create_button, submit_button, child_button):
         login_button.pack_forget()
 
         tk.Label(root, text="Username").pack()
@@ -43,6 +45,7 @@ class loginPage:
         phone_entry.pack()
         create_button.pack()
         submit_button.pack()
+        child_button.pack()
 
     def submit(self, root, username_entry, password_entry):
         username = username_entry.get()
@@ -62,6 +65,26 @@ class loginPage:
                 if((fetchedUsername == username) and (fetchedPassword==password)):
                     root.quit()
                     self.userDetails = [fetchedID,fetchedUsername,fetchedPassword,fetchedAdminStatus,fetchedEmail,fetchedPhoneNumber]
+                    self.closingAction = "signInSuccess"
+
+    def childLogin(self, root, username_entry, password_entry):
+        username = username_entry.get()
+        password = password_entry.get()
+        sql = '''SELECT * FROM ChildAccountDetails WHERE username=?'''
+        with sqlite3.connect('Details.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute(sql,(username,))
+            row = cursor.fetchall()
+            if(row != []):
+                fetchedID = row[0][0]
+                fetchedUsername = row[0][1]
+                fetchedPassword = row[0][2]
+                fetchedParentEmail = row[0][3]
+                fetchedParentPhoneNumber = row[0][4]
+                if((fetchedUsername == username) and (fetchedPassword==password)):
+                    root.quit()
+                    self.userDetails = [fetchedID,fetchedUsername,fetchedPassword,fetchedParentEmail,fetchedParentPhoneNumber]
+                    self.isChild = True
                     self.closingAction = "signInSuccess"
 
     def createAccount(self, root, username_entry, password_entry, email_entry, phone_entry):
