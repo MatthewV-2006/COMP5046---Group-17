@@ -13,11 +13,12 @@ loginPage = App_Login.loginPage(root)
 loginResponse = loginPage.main(root)
 userDetails = loginResponse[0]
 closingAction = loginResponse[1]
+isChild = loginResponse[2]
 if closingAction == "signInSuccess" or closingAction == "accountCreationSuccess":
     homePage = AccountMainPage.home(root)
-    homePageResponse = homePage.main(root,userDetails)
+    homePageResponse = homePage.main(root,userDetails,isChild)
     if homePageResponse[0] == "updateDetails":
-        updateDetails = contactDetails.contactDetails(root, userDetails)
+        updateDetails = contactDetails.contactDetails(root, userDetails, homePageResponse)
         updateResponse = updateDetails.main(root)
         userDetails = updateResponse[0]
         closingAction = updateResponse[1]

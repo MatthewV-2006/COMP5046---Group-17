@@ -24,7 +24,7 @@ class loginPage:
 
         submit_button = tk.Button(root, text="Sign in", command=lambda: self.submit(root, username_entry, password_entry), width=10)
         create_button = tk.Button(root, text="Create account", command=lambda: self.createAccount(root, username_entry, password_entry, email_entry, phone_entry), width=10)
-        child_button = tk.Button(root, text="log in as child", command=lambda: self.childLogin(root, username_entry, password_entry, email_entry, phone_entry), width=10)
+        child_button = tk.Button(root, text="log in as child", command=lambda: self.childLogin(root, username_entry, password_entry), width=10)
         root.mainloop()
         return (self.userDetails,self.closingAction,self.isChild)
 
@@ -70,17 +70,18 @@ class loginPage:
     def childLogin(self, root, username_entry, password_entry):
         username = username_entry.get()
         password = password_entry.get()
-        sql = '''SELECT * FROM ChildAccountDetails WHERE username=?'''
+        sql = '''SELECT * FROM main.ChildAccountDetails WHERE username=?'''
         with sqlite3.connect('Details.db') as conn:
             cursor = conn.cursor()
             cursor.execute(sql,(username,))
             row = cursor.fetchall()
             if(row != []):
                 fetchedID = row[0][0]
-                fetchedUsername = row[0][1]
-                fetchedPassword = row[0][2]
-                fetchedParentEmail = row[0][3]
-                fetchedParentPhoneNumber = row[0][4]
+                fetchedParent = row[0][1]
+                fetchedUsername = row[0][2]
+                fetchedPassword = row[0][3]
+                fetchedParentEmail = row[0][4]
+                fetchedParentPhoneNumber = row[0][5]
                 if((fetchedUsername == username) and (fetchedPassword==password)):
                     root.quit()
                     self.userDetails = [fetchedID,fetchedUsername,fetchedPassword,fetchedParentEmail,fetchedParentPhoneNumber]

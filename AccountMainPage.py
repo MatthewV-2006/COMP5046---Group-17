@@ -55,7 +55,7 @@ class home:
         self.childID = childID
         root.quit()
     
-    def main(self,root,userDetails):
+    def main(self,root,userDetails,isChild):
         main_container = ttk.Frame(root)
         main_container.pack(fill = "both", expand = True)        
 
@@ -81,46 +81,45 @@ class home:
 
         """Add any buttons for new pages here and the add a new function (def) above to output the correct closeing action. 
         Then you can update Master.py to open the new page"""
-                        
-        #button for updating the details of a user account
-        update_details_button = ttk.Button(scrollable_frame, text = "Update contact details", command=lambda: self.update_details(root))
-        update_details_button.pack(pady = 10)
+        if not isChild:
+            #button for updating the details of a user account
+            update_details_button = ttk.Button(scrollable_frame, text = "Update contact details", command=lambda: self.update_details(root))
+            update_details_button.pack(pady = 10)
 
-        #button for adding medication
-        add_medication_button = ttk.Button(scrollable_frame, text = "Add Medication", command=lambda: self.add_medication(root))
-        add_medication_button.pack(pady = 10)
+            #button for adding medication
+            add_medication_button = ttk.Button(scrollable_frame, text = "Add Medication", command=lambda: self.add_medication(root))
+            add_medication_button.pack(pady = 10)
 
-        #button for adding medication
-        create_child_account_button = ttk.Button(scrollable_frame, text = "Create child account", command=lambda: self.create_child_account(root))
-        create_child_account_button.pack(pady = 10)
+            #button for creating a child account
+            create_child_account_button = ttk.Button(scrollable_frame, text = "Create child account", command=lambda: self.create_child_account(root))
+            create_child_account_button.pack(pady = 10)
 
-        # creates a button for viewing child medications
-        view_child_meds_button = ttk.Button(scrollable_frame, text="View child medications", command=self.view_child_meds)
-        view_child_meds_button.pack(pady=10)
+            # creates a button for viewing child medications
+            view_child_meds_button = ttk.Button(scrollable_frame, text="View child medications", command=self.view_child_meds)
+            view_child_meds_button.pack(pady=10)
 
-        """----------------------------------------"""
+            """----------------------------------------"""
 
-        #displays list of child accounts related to the current parent account
-        sql = "SELECT AccountID, Username FROM main.ChildAccountDetails"
-        with sqlite3.connect('Details.db') as conn:
-            cur = conn.cursor()
-            cur.execute(sql,)
-            iterator = cur.fetchall()
-            if iterator != []:
-                children = ttk.LabelFrame(scrollable_frame, text = "Children:", padding=10)
-                children.columnconfigure(0, weight = 1)
-                children.pack(padx=20, pady=20, fill="both",expand=True)
-                counter = 0
-                for row in iterator:
-                    id = row[0]
-                    name = row[1]
-                    childName = tk.Label(children, text=name)
-                    editChildButton = ttk.Button(children, text = "edit details", command=lambda:self.edit_child_account(root,id))
-                    childName.pack()
-                    editChildButton.pack()
+            #displays list of child accounts related to the current parent account
+            sql = "SELECT AccountID, Username FROM main.ChildAccountDetails"
+            with sqlite3.connect('Details.db') as conn:
+                cur = conn.cursor()
+                cur.execute(sql,)
+                iterator = cur.fetchall()
+                if iterator != []:
+                    children = ttk.LabelFrame(scrollable_frame, text = "Children:", padding=10)
+                    children.columnconfigure(0, weight = 1)
+                    children.pack(padx=20, pady=20, fill="both",expand=True)
+                    for row in iterator:
+                        id = row[0]
+                        name = row[1]
+                        childName = tk.Label(children, text=name)
+                        editChildButton = ttk.Button(children, text = "edit details", command=lambda:self.edit_child_account(root,id))
+                        childName.pack()
+                        editChildButton.pack()
 
         # displays details of users if the user has admin
-        if userDetails[3]:
+        if userDetails[3] and not isChild:
             #creates new section for user accounts
             users = ttk.LabelFrame(scrollable_frame, text = "Users:", padding=10)
             users.columnconfigure(0, weight = 1)
