@@ -25,9 +25,6 @@ class home:
         # sets the size of the window
         root.geometry("850x850")
 
-
-        # example medication data
-
     # update contact details
     def update_details(self,root):
         self.closing_action = "updateDetails"
