@@ -32,6 +32,10 @@ class home:
     def update_details(self,root):
         self.closing_action = "updateDetails"
         root.quit()
+    
+    def manage_subscription(self,root):
+        self.closing_action = "manageSubscription"
+        root.quit()
 
     # add medication
     def add_medication(self,root):
@@ -85,6 +89,10 @@ class home:
             #button for updating the details of a user account
             update_details_button = ttk.Button(scrollable_frame, text = "Update contact details", command=lambda: self.update_details(root))
             update_details_button.pack(pady = 10)
+
+            #button for managing a user account's subscription
+            manage_subscription_button = ttk.Button(scrollable_frame, text="Manage subscription", command=lambda: self.manage_subscription(root))
+            manage_subscription_button.pack(pady = 10)
 
             #button for adding medication
             add_medication_button = ttk.Button(scrollable_frame, text = "Add Medication", command=lambda: self.add_medication(root))
