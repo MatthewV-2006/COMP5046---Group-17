@@ -8,6 +8,7 @@ import contactDetails
 import childCreation
 import editChildren
 import AccountMainPage
+import manageSubscription
 root = tk.Tk()
 loginPage = App_Login.loginPage(root)
 loginResponse = loginPage.main(root)
@@ -22,6 +23,10 @@ if closingAction == "signInSuccess" or closingAction == "accountCreationSuccess"
         updateResponse = updateDetails.main(root)
         userDetails = updateResponse[0]
         closingAction = updateResponse[1]
+    
+    elif homePageResponse[0] == "manageSubscription":
+        manageSubscription = manageSubscription.manageSubscription(root)
+        manageSubscriptionResponse = manageSubscription.main(userDetails)
 
     elif homePageResponse[0] == "createChildAccount":
         childCreation = childCreation.childCreation(root, userDetails)
